@@ -29,7 +29,31 @@ async function run() {
     const menuCollection = client.db("bistroBoss").collection("menu")
     const reviewCollection = client.db("bistroBoss").collection("reviews")
     const cartCollection = client.db("bistroBoss").collection("carts")
+    const userCollection = client.db("bistroBoss").collection("users")
 
+    // -----------------------------
+    // user related api
+    
+    app.post('/users', async(req, res) =>{
+      const user = req.body
+      /**
+       * 1. insert email if user does not exit
+       * you can do this in many ways(
+       * 1. email unique,
+       * 2. upsert
+       * 3. simple checking
+       * )
+       */
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query)
+      if(existingUser){
+        return res.send({message: 'User already exist', insertedId: null})
+      }
+      const result = await userCollection.insertOne(user)
+      res.send(result)
+    })
+
+    // ------------------------------
     app.get('/menu', async(req, res)=>{
         const result = await menuCollection.find().toArray()
         res.send(result)

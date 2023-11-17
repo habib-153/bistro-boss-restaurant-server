@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const port = process.env.PORT || 5000
 
@@ -31,6 +32,30 @@ async function run() {
     const cartCollection = client.db("bistroBoss").collection("carts")
     const userCollection = client.db("bistroBoss").collection("users")
 
+// -------------------------------
+    // jwt api's
+    app.post('/jwt',async(req,res)=>{
+      const user = req.body
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,{
+      expiresIn: '1h'})
+      res.send({token})
+    })
+
+    // middlewares
+    const verifyToken = (req, res, next) =>{
+      console.log(req.headers)
+      if(!req.headers.authorization){
+        return res.status(401).send({message: 'forbidden'})
+      }
+      const token = req.headers.authorization.split(' ')[1]
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded)=>{
+        if(err){
+          return res.status(401).send({message: 'forbidden'})
+        }
+        req.decoded = decoded
+        next()
+      })
+    }
     // -----------------------------
     // user related api
     
@@ -53,8 +78,20 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/users', async(req, res)=>{
+    app.get('/users', verifyToken, async(req, res)=>{
       const result = await userCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.patch('/users/admin/:id', async(req, res)=>{
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id)}
+      const updatedDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc)
       res.send(result)
     })
 

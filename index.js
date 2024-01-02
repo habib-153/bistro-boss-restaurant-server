@@ -3,6 +3,9 @@ const app = express();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const SSLCommerzPayment = require('sslcommerz-lts')
+
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const formData = require("form-data");
@@ -32,6 +35,10 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
+const store_id = process.env.Store_id
+const store_passwd = process.env.Store_passwd
+const is_live = false //true for live, false for sandbox
 
 async function run() {
   try {

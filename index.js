@@ -243,7 +243,7 @@ async function run() {
       // console.log(cart.price)
       const data = {
         total_amount: cart?.price,
-        currency: cart?.currency,
+        currency: cart.currency,
         tran_id: tran_id, // use unique tran_id for each api call
         success_url: `http://localhost:5000/payment/success/${tran_id}`,
         fail_url: `http://localhost:5000/payment/fail/${tran_id}`,
@@ -289,6 +289,13 @@ async function run() {
           status: cart.status,
         };
         const result = paymentCollection.insertOne(finalCart);
+
+        const query = {
+          _id: {
+            $in: cart.cartIds.map((id) => new ObjectId(id)),
+          },
+        };
+        const deleteResult = cartCollection.deleteMany(query);
 
         console.log("Redirecting to: ", GatewayPageURL);
       });

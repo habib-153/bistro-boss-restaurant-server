@@ -245,9 +245,9 @@ async function run() {
         total_amount: cart?.price,
         currency: cart.currency,
         tran_id: tran_id, // use unique tran_id for each api call
-        success_url: `http://localhost:5000/payment/success/${tran_id}`,
-        fail_url: `http://localhost:5000/payment/fail/${tran_id}`,
-        cancel_url: `http://localhost:5000/payment/cancel/${tran_id}`,
+        success_url: `https://bistro-boss-server-blond-zeta.vercel.app/payment/success/${tran_id}`,
+        fail_url: `https://bistro-boss-server-blond-zeta.vercel.app/payment/fail/${tran_id}`,
+        cancel_url: `https://bistro-boss-server-blond-zeta.vercel.app/payment/cancel/${tran_id}`,
         ipn_url: "http://localhost:3030/ipn",
         shipping_method: "Courier",
         product_name: "Food",
@@ -311,7 +311,8 @@ async function run() {
         );
         if (result.modifiedCount > 0) {
           res.redirect(
-            `http://localhost:5173/dashboard/payment/success/${req.params.tranId}`
+            `https://bistro-boss-b0ea7.web.app/dashboard/payment/success/${req.params.tranId}`
+            // `http://localhost:5173/dashboard/payment/success/${req.params.tranId}`
           );
         }
       });

@@ -238,6 +238,61 @@ async function run() {
       });
     });
 
+    const tran_id = new ObjectId().toString()
+    app.post("/payment", async(req, res) => {
+      const cart = req.body
+      // console.log(cart.price)
+      const data = {
+        total_amount: cart?.price,
+        currency: cart?.currency,
+        tran_id: tran_id, // use unique tran_id for each api call
+        success_url: 'http://localhost:3030/success',
+        fail_url: 'http://localhost:3030/fail',
+        cancel_url: 'http://localhost:3030/cancel',
+        ipn_url: 'http://localhost:3030/ipn',
+        shipping_method: 'Courier',
+        product_name: 'Food',
+        product_category: 'Food',
+        product_profile: 'general',
+        cus_name: cart?.name,
+        cus_email: cart?.email,
+        cus_add1: cart?.address,
+        cus_city: 'Dhaka',
+        cus_state: 'Dhaka',
+        cus_postcode: '1000',
+        cus_country: 'Bangladesh',
+        cus_phone: cart?.phone,
+        cus_fax: cart?.phone,
+        ship_name: cart?.name,
+        ship_add1: 'Dhaka',
+        date: cart?.date,
+        ship_city: 'Dhaka',
+        ship_state: 'Dhaka',
+        ship_postcode: 1000,
+        ship_country: 'Bangladesh',
+    };
+    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
+    sslcz.init(data).then(apiResponse => {
+        // Redirect the user to payment gateway
+        let GatewayPageURL = apiResponse.GatewayPageURL
+        res.send({url: GatewayPageURL})
+        console.log('Redirecting to: ', GatewayPageURL)
+    });
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     app.post("/payments", async (req, res) => {
       const payment = req.body;
       const paymentResult = await paymentCollection.insertOne(payment);
